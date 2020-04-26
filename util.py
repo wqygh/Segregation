@@ -23,14 +23,15 @@ def plot_map(pop, nx, st, saving=False):
     # reshape the population to the shape of the grid world
     girdmap = pop.reshape((nx, nx))
     # initiate the plot and add the color bar legend
-    img = plt.matshow(girdmap, cmap=cmap)
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.gca()
+    img = ax.imshow(girdmap, cmap=cmap)
     plt.colorbar(img, cmap=cmap, boundaries=bounds, ticks=np.arange(np.min(girdmap),np.max(girdmap)+1), shrink=0.5)
-    # save or show the plot
+    # save the plot
     if saving:
         filename = 'map_time_{0}.png'.format(st)
         filepath = os.path.join(OUTPUT, filename)
-        plt.savefig(filepath, dpi=300, facecolor='white')
-    else:
-        plt.show()
-    plt.close()
+        plt.savefig(filepath, dpi=200, facecolor='white')
+    
+    return img
     

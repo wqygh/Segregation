@@ -1,6 +1,7 @@
 import os
 import numpy as np
-import pysal as ps
+import matplotlib.pyplot as plt
+from libpysal.weights import lat2W
 from util import *
 
 class seg_sim(object):
@@ -58,11 +59,36 @@ class seg_sim(object):
         self.population[:, 2] = np.random.uniform(-1, 1, size=nx*nx)
 
         # Initialize the World
-        self.world = ps.lat2W(nx, nx, rook=False)
+        self.world = lat2W(nx, nx, rook=False)
     
-    def move_stage(self):
+    def move_stage(self, show_progress=False, save_figures=True):
 
-        plot_map(self.population[:, 0], self.nx, 0, True)
+        pop = self.population
+        W = self.world
+        nx = self.nx
+
+        img = plot_map(pop[:, 0], nx, 0, saving=save_figures)
+
+        for t in range(self.epoch):
+            # Randomly pick an agent
+            loc = np.random.randint(0, self.npop)
+            # For those are not empty agents
+            if pop[loc, 0] < 2:
+                in_g = pop[loc, 0]
+                out_g = 1 - in_g
+                n_in_g = np.sum(pop[W.neighbors[loc], 0] == in_g)
+                n_out_g = np.sum(pop[W.neighbors[loc], 0] == out_g)
+                if n_out_g > 0 and n_in_g / n_out_g < self.threshold:
+                    mv = np.random.randint(0, self.NGE)
+                    des = np.where(pop[:,0] == 2)[0][mv]
+                    pop[des, :] = pop[loc, :]
+                    pop[loc, 0] = 2
+                    
+                    if show_progress:
+                        img.set_data(pop[:, 0].reshape(nx, nx))
+                        plt.draw(), plt.pause(0.1)
+        
+        _ = plot_map(pop[:, 0], nx, 'after_move', saving=save_figures)
 
 if __name__ == '__main__':
     SEG = seg_sim()
