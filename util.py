@@ -14,7 +14,7 @@ def plot_map(pop, nx, st, saving=False):
     st (int): the run iteration
     saving (bool): save the figure or not
     Returns:
-    None
+    img (AxisImage): the map image object
     '''
     # choosing the colors
     cmap = colors.ListedColormap(['red', 'blue', 'grey'])
@@ -23,7 +23,7 @@ def plot_map(pop, nx, st, saving=False):
     # reshape the population to the shape of the grid world
     girdmap = pop.reshape((nx, nx))
     # initiate the plot and add the color bar legend
-    fig = plt.figure(figsize=(8, 8))
+    fig = plt.figure(figsize=(5, 4))
     ax = fig.gca()
     img = ax.imshow(girdmap, cmap=cmap)
     plt.colorbar(img, cmap=cmap, boundaries=bounds, ticks=np.arange(np.min(girdmap),np.max(girdmap)+1), shrink=0.5)

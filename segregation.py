@@ -8,22 +8,25 @@ class seg_sim(object):
     '''
     Class to run the segregation simulation.
     '''
-    def __init__(self, epoch=10000, iterations=100, nx=50, GA=0.425, GB=0.425, threshold=0.3, PS=0.01, PC=1.5):
+    def __init__(self, n_move=10000, n_interact=1000, nx=50, GA=0.425, GB=0.425, threshold=0.3, PS=0.01, CS=1.5):
         '''
         Initialize the simulation object.
         Args:
-        epoch (int): number of epochs to run.
-        iterations (int): number of iterations during updating.
+        n_move (int): number of moves to run
+        n_interact (int): number of interactions to run
         nx (int): the width of the sauqre grid world
         GA (float): the proportion of agents in Group A
         GB (float): the proportion of agents in Group B
         threshold (float): threshold to move
         PS (float): ID strength change probability
-        PC (float): ID change constant
+        CS (float): ID strength change constant
         '''
-        self.epoch = epoch
-        self.iterations = iterations
+        self.n_move = n_move
+        self.n_interact = n_interact
         self.nx = nx
+        # Initialize the count of moves and interactions
+        self.c_move = 0
+        self.c_interact = 0
         # The total population is the size of the grid world
         self.npop = nx * nx
         # 2D array store some properties the agents
@@ -43,7 +46,7 @@ class seg_sim(object):
 
         self.threshold = threshold
         self.PS = PS
-        self.PC = PC
+        self.CS = CS
 
         # Randomly assign group ID to agents
         # 0-Group A, 1-Group B, 2-Group E (empty cell/agent)
@@ -60,8 +63,19 @@ class seg_sim(object):
 
         # Initialize the World
         self.world = lat2W(nx, nx, rook=False)
+
+        # Initialize the average ID strength list
+        self.avgS = []
     
     def move_stage(self, show_progress=False, save_figures=True):
+        '''
+        Moving agents according to their ID strength.
+        Args:
+        show_progress (bool): whether to show the updating map
+        save_figures (bool): whether to save the initial and final map
+        Returns:
+        Nono
+        '''
 
         pop = self.population
         W = self.world
@@ -69,29 +83,47 @@ class seg_sim(object):
 
         img = plot_map(pop[:, 0], nx, 0, saving=save_figures)
 
-        for t in range(self.epoch):
+        for t in range(self.n_move):
             # Randomly pick an agent
             loc = np.random.randint(0, self.npop)
-            # For those are not empty agents
+            # For a not empty agent
             if pop[loc, 0] < 2:
+                # Get the within group ID and outside group ID
                 in_g = pop[loc, 0]
                 out_g = 1 - in_g
+                # Count the numbher of within group and outside group neighbors
                 n_in_g = np.sum(pop[W.neighbors[loc], 0] == in_g)
                 n_out_g = np.sum(pop[W.neighbors[loc], 0] == out_g)
+                # When ther ratio of within group and outside group neighbors us lower than the threshold
                 if n_out_g > 0 and n_in_g / n_out_g < self.threshold:
+                    # Randomly pick an empty cell/agent
                     mv = np.random.randint(0, self.NGE)
                     des = np.where(pop[:,0] == 2)[0][mv]
+                    # Move the current agent
                     pop[des, :] = pop[loc, :]
                     pop[loc, 0] = 2
                     
                     if show_progress:
                         img.set_data(pop[:, 0].reshape(nx, nx))
-                        plt.draw(), plt.pause(0.1)
-        
-        _ = plot_map(pop[:, 0], nx, 'after_move', saving=save_figures)
+                        plt.draw(), plt.pause(0.05)
+    
+        self.c_move += 1
+        _ = plot_map(pop[:, 0], nx, 'after_move_{0}'.format(self.c_move), saving=save_figures)
 
+    def interact_stage(self):
+        ''''''
+        
+        pop = self.population
+        p = self.PS
+        c = self.CS
+        W = self.world
+
+        # Run the interaction n_interact times
+        for interaction in range(self.n_interact):
+            # 
+            
 if __name__ == '__main__':
     SEG = seg_sim()
-    SEG.move_stage()
+    SEG.move_stage(show_progress=True)
 
 
