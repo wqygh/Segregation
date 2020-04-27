@@ -108,7 +108,7 @@ class seg_sim(object):
                         plt.draw(), plt.pause(0.05)
     
         self.c_move += 1
-        _ = plot_map(pop[:, 0], nx, 'after_move_{0}'.format(self.c_move), saving=save_figures)
+        _ = plot_map(pop[:, 0], nx, 'after_{0}_moves_{1}'.format(self.n_move, self.c_move), saving=save_figures)
 
     def interact_stage(self):
         ''''''
@@ -121,7 +121,7 @@ class seg_sim(object):
         # Run the interaction n_interact times
         for interaction in range(self.n_interact):
             # 
-            
+            pass
 if __name__ == '__main__':
     SEG = seg_sim()
     SEG.move_stage(show_progress=True)
