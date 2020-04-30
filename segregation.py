@@ -30,7 +30,7 @@ class seg_sim(object):
         # The total population is the size of the grid world
         self.npop = nx * nx
         # 2D array store some properties the agents
-        # 0-Group ID, 1-Type, 2-Cuurent ID strength, 3-Future ID strength
+        # 0-Group ID, 1-Type, 2-Current ID strength, 3-Future ID strength
         self.population = np.zeros((nx*nx, 4))
 
         # 2D array store the segregation data
@@ -81,7 +81,8 @@ class seg_sim(object):
         W = self.world
         nx = self.nx
 
-        img = plot_map(pop[:, 0], nx, 0, saving=save_figures)
+        _ = plot_map(pop[:, 0], nx, 0, saving=save_figures)
+        img = plot_heatmap(pop, nx, 0, saving=save_figures)
 
         for t in range(self.n_move):
             # Randomly pick an agent
@@ -104,11 +105,13 @@ class seg_sim(object):
                     pop[loc, 0] = 2
                     
                     if show_progress:
-                        img.set_data(pop[:, 0].reshape(nx, nx))
+                        scaled_pop_strength = heatmap_scaler(pop)
+                        img.set_data(scaled_pop_strength[:, 1].reshape(nx, nx))
                         plt.draw(), plt.pause(0.05)
     
         self.c_move += 1
         _ = plot_map(pop[:, 0], nx, 'after_{0}_moves_{1}'.format(self.n_move, self.c_move), saving=save_figures)
+        _ = plot_heatmap(pop, nx, 'after_{0}_moves_{1}'.format(self.n_move, self.c_move), saving=save_figures)
 
     def interact_stage(self):
         ''''''
