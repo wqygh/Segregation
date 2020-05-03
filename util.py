@@ -37,16 +37,16 @@ def plot_map(pop, nx, st, saving=False):
 
 def heatmap_scaler(pop):
     '''
-    Helper function to put the ID strength of different group to one scale: -1 to 5.
+    Helper function to put the ID strength of different group to one scale: -1 to 11.
     Args:
     pop(2D array): the population to plot, 0-Group ID, 1-Type, 2-Current ID strength, 3-Future ID strength
     Returns:
-    scaled_pop(2D array): 0-Group, 2-Current ID strength, 2-Future ID strength, ID strength scale: -1 to 5
+    scaled_pop(2D array): 0-Group, 2-Current ID strength, 2-Future ID strength, ID strength scale: -1 to 11
     '''
     scaled_pop = np.copy(pop[:,[0, 2, 3]])
-    scaled_pop[:, 1] = scaled_pop[:, 0] * 4 + scaled_pop[:, 1]
-    scaled_pop[:, 2] = scaled_pop[:, 0] * 4 + scaled_pop[:, 2]
-    scaled_pop[scaled_pop[:, 0]==2] = 2
+    scaled_pop[:, 1] = scaled_pop[:, 0] * 10 + scaled_pop[:, 1]
+    scaled_pop[:, 2] = scaled_pop[:, 0] * 10 + scaled_pop[:, 2]
+    scaled_pop[scaled_pop[:, 0]==2] = 5
 
     return scaled_pop
 
